@@ -1,0 +1,36 @@
+* Notes and tasks for prayer notifer program
+
+** Needed functionality
+
++ Get longtitude/altiutde of specifecd location mostly through the API [[https://nominatim.org/][OpenStreetMap API]]
++ Calcualte time until next prayer given local time zone
+
+
+
+** Notes
+
+** DONE Cache responses and store them in json to parse 
+  
+** DONE Calculate prayer times
+
+*** to do so we need to
+
+**** DONE Convert to julian date.
+**** DONE Calculate sun declination.
+**** DONE Calculate equation of time. 
+**** DONE Calculate sun altitude.
+**** DONE Calculate sun descend correction time for Zuhur prayer.
+**** DONE Find what causes A'sir prayer time to be off comparatively
+It was caused by converting the input to tan for varible SA_ASR into radian again
+when it was already converted to it beforehand
+**** DONE Find and fix memory leaks
+Found the memory leaks there were caused by json_object_from_file() which
+i had to use json_object_put() to free however, in order to avoid using
+json_object_put() outside of json.c i did an additional allocation inside
+parse_json() and free the json structre inside parse_json().
+I will see if i can find a better solution.
+**** DONE Find a solution for what calculation method of 7 i believe i should choose per country
+I opted for a manual yet simple approach where the defualt method is MWM (Muslim World League) and can-
+be changed via supplying the prefered method in config.h
+
+**** WAITING Potentially implement a way to parse JSON files instead of relying on json-c
