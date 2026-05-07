@@ -35,13 +35,10 @@ I have the following snippet right before the infinite while loop in my xsetroot
 
 prayer-notifyer > /tmp/prayer.fifo &
 
-# Run cat in the background to prevent the program from exiting-
-# when the other cat process in display_prayer() exits
-cat /tmp/prayer.fifo > /dev/null &
 
 display_prayer() {
 # we're timing out as to prevent cat from blocking output of other programs-
 # displayed by xsetroot
-    timeout 2s cat /tmp/prayer.fifo
+    timeout 1s cat /tmp/prayer.fifo
 }
 ```

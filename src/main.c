@@ -6,7 +6,7 @@
 #include "calc.h"
 #include "config.h"
 #include <assert.h>
-
+#include <signal.h>
 
 
 char *get_json_value(const char *response, const char *key, const char *subkey) ;
@@ -19,6 +19,11 @@ int main(int argc, char **argv) {
   // so we enable line buffering for stdout, to see
   // live writes for redirected output to a file.
   setvbuf(stdout, NULL, _IOLBF, 0);
+
+  // The program is designed to run and write to a named pipe in the background infinitly.
+  // To prevent it from existing when another process exits upon finishing reading
+  // from the named pipe, we ignore the SIGPIPE signal.
+ signal(SIGPIPE, SIG_IGN);
 
  #ifndef MANUAL_MODE
 
