@@ -349,21 +349,16 @@ double convert_time_to_decimal(times *time) {
   return decimal_time;
 }
 
-Prayers get_next_prayer(double time_now_in_decimal, Prayers *prayers) {
+int get_next_prayer(double time_now_in_decimal, Prayers *prayers) {
 
   // next prayer is always going to have a greater time stamp than the current time.
   // so the next prayer is the prayer whose time is greater than the current time.
-
-  Prayers prayer;
 
   for(int i = 0; i < 6; ++i) {
 
      if(time_now_in_decimal < prayers[i].prayer_time) {
 
-      prayer.prayer_time = prayers[i].prayer_time;
-      prayer.prayer_name = prayers[i].prayer_name;
-
-      return prayer;
+       return i;
 
      }
 
@@ -372,19 +367,13 @@ Prayers get_next_prayer(double time_now_in_decimal, Prayers *prayers) {
   // if all prayers' times are smaller than current time then next prayer must be
   // fajir.
 
-  prayer.prayer_name = prayers[0].prayer_name;
-  prayer.prayer_time = prayers[0].prayer_time;
-
-  return prayer;
+  return 0;
 
 }
 
 
-unsigned short int *next_prayer_time_remaining(double next_prayer, double current_decimal_time) {
+void next_prayer_time_remaining(Prayers *prayers, double next_prayer, double current_decimal_time) {
 
-  unsigned short int *time_tuple = malloc(sizeof(unsigned short int) * 2);
-
-  assert(time_tuple != NULL);
 
   // exeptional case for Fajir prayer, since fajir has the
   // smallest prayer time value of all the prayers, we increment it
@@ -395,34 +384,33 @@ unsigned short int *next_prayer_time_remaining(double next_prayer, double curren
 
   //  printf("next: %lf curr: %lf\n", next_prayer, current_decimal_time);
 
-  unsigned short int hour = next_prayer - current_decimal_time;
+  prayers->prayers_remaining_times.hour = next_prayer - current_decimal_time;
   double tmp  = next_prayer - current_decimal_time;
-  unsigned short int min  = (tmp - (unsigned int)tmp) * 60;
+  prayers->prayers_remaining_times.min  = (tmp - (unsigned int)tmp) * 60;
 
 
-  while(60 <= min) {
+  while(60 <= prayers->prayers_remaining_times.min) {
 
-    hour++;
-    min -= 60;
+    prayers->prayers_remaining_times.hour++;
+    prayers->prayers_remaining_times.min -= 60;
 
   }
 
-  time_tuple[0] = hour;
-  time_tuple[1] = min;
 
-  return time_tuple;
+
 }
 
-void count_down_next_prayer(unsigned short int hour, unsigned short int min, Prayers *prayer) {
+void count_down_next_prayer(Prayers *prayer) {
 
   unsigned short int sec = 60;
 
 
 
-  while(hour || min || sec) {
+  while(prayer->prayers_remaining_times.hour || prayer->prayers_remaining_times.min || sec) {
 
 
-    printf("Time untill %s prayer: %d:%d:%d\n",prayer->prayer_name,  hour, min, sec);
+    printf("Time untill %s prayer: %d:%d:%d\n",prayer->prayer_name,  prayer->prayers_remaining_times.hour,
+	   prayer->prayers_remaining_times.min, sec);
 
     sleep(1);
 
@@ -430,15 +418,15 @@ void count_down_next_prayer(unsigned short int hour, unsigned short int min, Pra
 
       sec--;
 
-    }else if(0 < min) {
+    }else if(0 < prayer->prayers_remaining_times.min) {
 
-      min--;
+      prayer->prayers_remaining_times.min--;
       sec = 60;
 
-    }else if(0 < hour) {
+    }else if(0 < prayer->prayers_remaining_times.hour) {
 
-      hour--;
-      min = 60;
+      prayer->prayers_remaining_times.hour--;
+      prayer->prayers_remaining_times.min = 60;
 
     }
 

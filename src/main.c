@@ -43,9 +43,9 @@ int main(int argc, char **argv) {
 
   double current_decimal_time = convert_time_to_decimal(time);
 
-  Prayers next_prayer = get_next_prayer(current_decimal_time, prayers);
+  int indx = get_next_prayer(current_decimal_time, prayers);
 
-  unsigned short int *times = next_prayer_time_remaining(next_prayer.prayer_time, current_decimal_time);
+  next_prayer_time_remaining(&prayers[indx], prayers[indx].prayer_time, current_decimal_time);
 
 
  #if DEBUG
@@ -83,11 +83,11 @@ int main(int argc, char **argv) {
   #endif
 
 
-  count_down_next_prayer(times[0], times[1], &next_prayer);
+  count_down_next_prayer(&prayers[indx]);
 
   // To avoid recalculation of prayers each time do it
   // only after Isha prayer.
-  if(strcmp(next_prayer.prayer_name, "Isha") == 0) {
+  if(strcmp(prayers[indx].prayer_name, "Isha") == 0) {
 
     free(prayers);
     prayers = calc_prayers_times(CURRENT_CAL_METHOD);
@@ -95,7 +95,6 @@ int main(int argc, char **argv) {
   }
 
   free(time);
-  free(times);
 
   }
 

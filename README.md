@@ -37,8 +37,7 @@ prayer-notifyer > /tmp/prayer.fifo &
 
 
 display_prayer() {
-# we're timing out as to prevent cat from blocking output of other programs-
-# displayed by xsetroot
-    timeout 1s cat /tmp/prayer.fifo
+    read LINE < /tmp/prayer.fifo
+	echo $LINE
 }
 ```
