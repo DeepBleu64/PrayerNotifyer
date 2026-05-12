@@ -125,14 +125,9 @@ bool does_cache_exist() {
   int fd1, fd2;
 
   if((fd1 = open(fullpath_to_loc, O_RDONLY)) < 0 ||
-     (fd2 = open(fullpath_to_elevation_val, O_RDONLY)) < 0) {
+     (fd2 = open(fullpath_to_elevation_val, O_RDONLY)) < 0) return false;
 
-    close(fd1);
-    close(fd2);
 
-    return false;
-
-  }
 
     close(fd1);
     close(fd2);
@@ -145,7 +140,7 @@ void create_cache() {
 
            FILE *file1;
 	   FILE *file2;
-	   struct memory request;
+	   struct memory request = {0};
 	   const char *urls[] = {"https://ipinfo.io/", "https://api.open-elevation.com/api/v1/lookup?locations="};
 
   
@@ -176,7 +171,8 @@ void create_cache() {
 	   memset(full_url_query_string, '\0', sizeof(url_query_size));
 	   
 	   strcat_multi(url_query_size, full_url_query_string, urls[1], long_lat, NULL);
-	   
+
+
 	   request = make_curl_request(full_url_query_string);
 
            fprintf(file2,"%s\n", request.response);
@@ -185,5 +181,4 @@ void create_cache() {
 	   fclose(file2);
 
 	   free(long_lat);
-
 }

@@ -18,11 +18,9 @@ char *get_json_value(const char *filename, const char *key, const char *subkey) 
 
 
   if(!root) {
-
     fprintf(stderr,"Couldn't parse the json file exiting... :(\n");
-
+    json_object_put(root);
     exit(1);
-
   }
 
   //  loc = json_object_object_get(root, key);

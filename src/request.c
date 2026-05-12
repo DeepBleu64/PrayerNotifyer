@@ -1,9 +1,9 @@
 #include <curl/curl.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <assert.h>
 #include "request.h"
-#include "path.h"
 #include "request.h"
 
 
@@ -21,6 +21,7 @@ static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *use
     char *response = realloc(mem->response, mem->size + totalSize + 1);
 
     if(!response) return 0;
+
 
     mem->response = response;
     memcpy(&(mem->response[mem->size]), contents, totalSize);
@@ -53,6 +54,19 @@ struct memory make_curl_request(const char *url) {
     curl_easy_cleanup(curl);
     exit(1);
 
+  }
+
+  curl_easy_cleanup(curl);
+
+  // At times a curl request succeeds with an
+  // empty response which we don't care about
+  // so we keep querying the same URL until we
+  // get something
+  if(mem.size == 0) {
+    free(mem.response);
+    sleep(1);
+    fprintf(stderr, "Request\'s content empty Trying again...\n");
+    return make_curl_request(url);
   }
 
   return mem;
