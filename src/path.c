@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <unistd.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -118,11 +119,23 @@ void create_default_paths() {
 bool does_cache_exist() {
 
   // if paths are not constructed do so.
-  
+
   if(!*fullpath_to_loc && !*fullpath_to_elevation_val) create_default_paths();
 
-    if(open(fullpath_to_loc, O_RDONLY) < 0 ||
-       open(fullpath_to_elevation_val, O_RDONLY) < 0)  return false;
+  int fd1, fd2;
+
+  if((fd1 = open(fullpath_to_loc, O_RDONLY)) < 0 ||
+     (fd2 = open(fullpath_to_elevation_val, O_RDONLY)) < 0) {
+
+    close(fd1);
+    close(fd2);
+
+    return false;
+
+  }
+
+    close(fd1);
+    close(fd2);
 
     return true;
 }
@@ -174,4 +187,3 @@ void create_cache() {
 	   free(long_lat);
 
 }
-

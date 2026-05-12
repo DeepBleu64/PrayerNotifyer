@@ -43,6 +43,8 @@ int main(int argc, char **argv) {
 
   double current_decimal_time = convert_time_to_decimal(time);
 
+  free(time);
+
   int indx = get_next_prayer(current_decimal_time, prayers);
 
   next_prayer_time_remaining(&prayers[indx], prayers[indx].prayer_time, current_decimal_time);
@@ -65,8 +67,9 @@ int main(int argc, char **argv) {
   printf("lat: %f\nlong: %f\n",loc[0], loc[1]);
   printf("Sun declination: %f\n", get_sun_declination());
   printf("Equation of time: %f\n", get_equation_of_time());
-  printf("Next prayer: %lf\n", next_prayer.prayer_time);
-  printf("Time remaining til next prayer %s: [%d:%d]\n", next_prayer.prayer_name,  times[0], times[1]);
+  printf("Next prayer: %lf\n", prayers[indx].prayer_time);
+  printf("Time remaining til next prayer %s: [%d:%d]\n", prayers[indx].prayer_name,
+	 prayers[indx].prayers_remaining_times.hour, prayers[indx].prayers_remaining_times.min);
   printf("Current calc method: %s %d\n", methods_strings[CURRENT_CAL_METHOD], CURRENT_CAL_METHOD);
   for(int i = 0 ; i < 6; ++i) printf("%lf ", prayers[i].prayer_time);
 
@@ -78,7 +81,11 @@ int main(int argc, char **argv) {
 
   free(loc);
 
+
   #endif
+
+  free(prayers);
+  return 0;
 
   #endif
 
@@ -94,7 +101,7 @@ int main(int argc, char **argv) {
 
   }
 
-  free(time);
+
 
   }
 
